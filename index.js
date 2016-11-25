@@ -3,7 +3,7 @@ import React, { Component, PropTypes } from "react";
 import { View, Platform } from 'react-native';
 import xmldom from 'xmldom'; // Dependencie
 import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
-// import RNFS from 'react-native-fs';
+import RNFS from 'react-native-fs';
 
 import Svg, {
     Circle,
@@ -79,8 +79,7 @@ class SvgUri extends Component {
     }
 
     async fetchFile(uri) {
-        if (Platform.OS === 'android' && uri.startsWith('file:')) {
-            const RNFS = require('react-native-fs');
+        if (!uri.startsWith('http')) {
             return await RNFS.readFile(uri, 'utf8');
         } else {
             return await fetch(uri);
