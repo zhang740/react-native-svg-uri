@@ -78,18 +78,20 @@ class SvgUri extends Component {
         }
     }
 
-    async fetchFile(uri) {
-        if (!uri.startsWith('http')) {
-            return await RNFS.readFile(uri.replace('file://', ''), 'utf8');
-        } else {
-            return await fetch(uri).text();
-        }
+    async fetchFromFile(uri) {
+        return await RNFS.readFile(uri.replace('file://', ''), 'utf8');
     }
 
 
     async fecthSVGData(uri) {
         try {
-            let responseXML = await this.fetchFile(uri);
+            let responseXML = '';
+            if (!uri.startsWith('http')) {
+                responseXML = await this.fetchFromFile(uri);
+            } else {
+                let response = await fetch(uri);
+                responseXML = await response.text();
+            }
             this.setState({ svgXmlData: responseXML });
             return responseXML;
         } catch (error) {
