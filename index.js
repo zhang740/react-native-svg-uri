@@ -80,7 +80,7 @@ class SvgUri extends Component {
 
     async fetchFile(uri) {
         if (!uri.startsWith('http')) {
-            return await RNFS.readFile(uri, 'utf8');
+            return await RNFS.readFile(uri.replace('file://', ''), 'utf8');
         } else {
             return await fetch(uri);
         }
