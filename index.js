@@ -59,6 +59,7 @@ const ATTS_TRANSFORMED_NAMES = {
 let ind = 0;
 
 class SvgUri extends Component {
+    isUnmount = false
 
     constructor(props) {
         super(props);
@@ -78,10 +79,20 @@ class SvgUri extends Component {
         }
     }
 
+    componentWillUnmount() {
+        this.isUnmount = true
+    }
+
     async fetchFromFile(uri) {
         return await RNFS.readFile(uri.replace('file://', ''), 'utf8');
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (this.props.source !== nextProps.source) {
+            const source = resolveAssetSource(nextProps.source) || {};
+            this.fecthSVGData(source.uri);
+        }
+    }
 
     async fecthSVGData(uri) {
         try {
@@ -92,7 +103,9 @@ class SvgUri extends Component {
                 let response = await fetch(uri);
                 responseXML = await response.text();
             }
-            this.setState({ svgXmlData: responseXML });
+            if (!this.isUnmount) {
+                this.setState({ svgXmlData: responseXML });
+            }
             return responseXML;
         } catch (error) {
             console.error(error);
